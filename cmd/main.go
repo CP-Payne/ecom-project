@@ -5,9 +5,8 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/CP-Payne/ecommerce-server/internal/api"
 	"github.com/CP-Payne/ecommerce-server/internal/config"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
@@ -28,11 +27,7 @@ func main() {
 
 	cfg := config.NewConfig(*port, *env)
 
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello World"))
-	})
+	r := api.NewRouter(cfg)
 
 	killSig := make(chan os.Signal, 1)
 
