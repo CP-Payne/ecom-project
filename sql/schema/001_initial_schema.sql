@@ -21,6 +21,8 @@ CREATE TABLE products
     FOREIGN KEY (category_id) REFERENCES categories (id)
 );
 
+CREATE INDEX idx_products_created_at_id ON products (created_at, id);
+
 CREATE TABLE product_images
 (
     id         UUID PRIMARY KEY,
