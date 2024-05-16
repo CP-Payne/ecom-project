@@ -3,8 +3,8 @@ CREATE TABLE categories
 (
     id         UUID PRIMARY KEY,
     name       VARCHAR(100) NOT NULL UNIQUE,
-    created_at TIMESTAMP    NOT NULL,
-    updated_at TIMESTAMP    NOT NULL
+    created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE products
@@ -16,8 +16,8 @@ CREATE TABLE products
     stock       REAL,
     description TEXT,
     category_id UUID NOT NULL,
-    created_at  TIMESTAMP    NOT NULL,
-    updated_at  TIMESTAMP    NOT NULL,
+    created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES categories (id)
 );
 
@@ -27,8 +27,8 @@ CREATE TABLE product_images
     product_id UUID      NOT NULL REFERENCES products (id) ON DELETE CASCADE,
     image_type VARCHAR(50),
     image_url  VARCHAR(250),
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- +goose Down
