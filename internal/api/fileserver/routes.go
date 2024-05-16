@@ -6,11 +6,11 @@ import (
 	"net/http"
 )
 
-func Routes(cfg *config.Config) *chi.Mux {
+func Routes(apiCfg *config.ApiConfig) *chi.Mux {
 	r := chi.NewRouter()
 
 	fileServer := http.FileServer(http.Dir("./internal/api/fileserver/images"))
-	cfg.Logger.Info("Serving files from ./internal/api/fileserver/images")
+	apiCfg.Logger.Info("Serving files from ./internal/api/fileserver/images")
 	r.Handle("/*", http.StripPrefix("/images/", fileServer))
 	return r
 }

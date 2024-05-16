@@ -1,22 +1,37 @@
 package config
 
-import "github.com/sirupsen/logrus"
+import (
+	"database/sql"
+	"github.com/CP-Payne/ecommerce-server/internal/database"
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
+	"os"
+)
 
 type Config struct {
-	Port   string
-	Env    string
-	Logger *logrus.Logger
+	Server *ServerConfig
+	API    *ApiConfig
 }
 
 func NewConfig(port, environment string) *Config {
+
+	logger := NewDefaultLogger(environment)
+
 	return &Config{
-		Port:   port,
-		Env:    environment,
-		Logger: setDefaultLogger(environment),
+		Server: &ServerConfig{
+			Port:   port,
+			Env:    environment,
+			Logger: logger,
+		},
+		API: &ApiConfig{
+			Logger: logger,
+			DB:     NewDB(logger),
+		},
 	}
 }
 
-func setDefaultLogger(env string) *logrus.Logger {
+func NewDefaultLogger(env string) *logrus.Logger {
 	log := logrus.New()
 
 	if env == "development" || env == "dev" {
@@ -32,4 +47,25 @@ func setDefaultLogger(env string) *logrus.Logger {
 		FullTimestamp: true,
 	})
 	return log
+}
+
+func NewDB(logger *logrus.Logger) *database.Queries {
+	err := godotenv.Load()
+	if err != nil {
+		logger.WithFields(
+			logrus.Fields{
+				"err": err,
+			}).Error("failed to load .env file")
+	}
+	connStr := os.Getenv("CONN_STR")
+
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		logger.WithFields(
+			logrus.Fields{
+				"err": err,
+			}).Error("failed to open database connection")
+	}
+
+	return database.New(db)
 }

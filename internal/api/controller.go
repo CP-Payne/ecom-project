@@ -7,12 +7,12 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func NewRouter(cfg *config.Config) *chi.Mux {
+func NewRouter(apiCfg *config.ApiConfig) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(middleware.Logger)
 
-	r.Mount("/images", fileserver.Routes(cfg))
+	r.Mount("/images", fileserver.Routes(apiCfg))
 	//r.Mount("/", product.Routes())
 
 	return r

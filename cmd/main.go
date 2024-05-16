@@ -15,26 +15,23 @@ import (
 	"time"
 )
 
-//func init() {
-//	fmt.Println("TEST init")
-//}
-
 func main() {
 
 	port := flag.String("port", "3000", "Define the port to listen on")
 	env := flag.String("env", "dev", "Define the environment: dev/development (tracelevel logging) or debug (debug level logging) or prod (info level logging)")
 	flag.Parse()
 
-	cfg := config.NewConfig(*port, *env)
+	mainConfig := config.NewConfig(*port, *env)
+	serverCfg := mainConfig.Server
 
-	r := api.NewRouter(cfg)
+	r := api.NewRouter(mainConfig.API)
 
 	killSig := make(chan os.Signal, 1)
 
 	signal.Notify(killSig, os.Interrupt, syscall.SIGTERM)
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%s", cfg.Port),
+		Addr:    fmt.Sprintf(":%s", serverCfg.Port),
 		Handler: r,
 	}
 
@@ -42,10 +39,10 @@ func main() {
 		err := srv.ListenAndServe()
 
 		if errors.Is(err, http.ErrServerClosed) {
-			cfg.Logger.Info("Server shutdown complete")
+			serverCfg.Logger.Info("Server shutdown complete")
 		} else if err != nil {
 			//log.Errorf("Server error: %v", err)
-			cfg.Logger.WithFields(
+			serverCfg.Logger.WithFields(
 				log.Fields{
 					"err": err,
 				}).Error("Failed to start server")
@@ -53,25 +50,25 @@ func main() {
 		}
 	}()
 
-	cfg.Logger.WithFields(log.Fields{
-		"port": cfg.Port,
-		"env":  cfg.Env,
+	serverCfg.Logger.WithFields(log.Fields{
+		"port": serverCfg.Port,
+		"env":  serverCfg.Env,
 	}).Info("Server started")
 	<-killSig
 
-	cfg.Logger.Info("Shutting down server...")
+	serverCfg.Logger.Info("Shutting down server...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		cfg.Logger.WithFields(
+		serverCfg.Logger.WithFields(
 			log.Fields{
 				"err": err,
 			}).Error("Server shutdown failed")
 		os.Exit(1)
 	}
 
-	cfg.Logger.Info("Server shutdown complete")
+	serverCfg.Logger.Info("Server shutdown complete")
 
 }
