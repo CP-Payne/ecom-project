@@ -23,7 +23,7 @@ type Product struct {
 	Name        string
 	Sku         string
 	Price       float32
-	Stock       sql.NullFloat64
+	Stock       int32
 	Description sql.NullString
 	CategoryID  uuid.UUID
 	CreatedAt   time.Time

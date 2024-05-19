@@ -13,7 +13,7 @@ CREATE TABLE products
     name        VARCHAR(100) NOT NULL,
     sku         VARCHAR(50)  NOT NULL UNIQUE,
     price       REAL         NOT NULL,
-    stock       REAL,
+    stock       INT NOT NULl,
     description TEXT,
     category_id UUID NOT NULL,
     created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,

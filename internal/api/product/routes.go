@@ -1,15 +1,14 @@
 package product
 
 import (
+	"github.com/CP-Payne/ecommerce-server/internal/config"
 	"github.com/go-chi/chi/v5"
-	"net/http"
 )
 
-func Routes() *chi.Mux {
+func Routes(apiCfg *config.ApiConfig) *chi.Mux {
 	r := chi.NewRouter()
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello World"))
-	})
+	ph := NewProductHandler(apiCfg)
+	r.Get("/", ph.getProductsPagination)
 
 	return r
 }

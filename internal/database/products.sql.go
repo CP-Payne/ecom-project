@@ -8,22 +8,25 @@ package database
 import (
 	"context"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const listProducts = `-- name: ListProducts :many
-SELECT id, name, sku, price, stock, description, category_id, created_at, updated_at FROM products WHERE (created_at, id) > ($1, $2)
+SELECT id, name, sku, price, stock, description, category_id, created_at, updated_at FROM products
+WHERE (created_at > $1 OR (created_at = $1 AND id > $2))
 ORDER BY created_at, id
 LIMIT $3
 `
 
 type ListProductsParams struct {
-	CreatedAt   time.Time
-	CreatedAt_2 time.Time
-	Limit       int32
+	CreatedAt time.Time
+	ID        uuid.UUID
+	Limit     int32
 }
 
 func (q *Queries) ListProducts(ctx context.Context, arg ListProductsParams) ([]Product, error) {
-	rows, err := q.db.QueryContext(ctx, listProducts, arg.CreatedAt, arg.CreatedAt_2, arg.Limit)
+	rows, err := q.db.QueryContext(ctx, listProducts, arg.CreatedAt, arg.ID, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
