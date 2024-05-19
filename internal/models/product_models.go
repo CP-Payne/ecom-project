@@ -8,15 +8,15 @@ import (
 )
 
 type Product struct {
-	ID          uuid.UUID
-	Name        string
-	Sku         string
-	Price       float32
-	Stock       int32
-	Description string
-	CategoryID  uuid.UUID
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Sku         string    `json:"sku"`
+	Price       float32   `json:"price"`
+	Stock       int32     `json:"stock"`
+	Description string    `json:"description"`
+	CategoryID  uuid.UUID `json:"category_id"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 func DatabaseProductToProduct(product database.Product) Product {
